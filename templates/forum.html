@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4" id="forum_html_template_with_search"> <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Все вопросы</h1>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('create_question') }}" class="btn btn-success">Задать вопрос</a>
+        {% else %}
+             <a href="{{ url_for('login', next=url_for('create_question')) }}" class="btn btn-success">Задать вопрос</a>
+        {% endif %}
+    </div>
+
+    <form method="GET" action="{{ url_for('forum_index') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search_query" class="form-control form-control-lg"
+                   placeholder="Поиск по темам вопросов..."
+                   value="{{ search_query if search_query else '' }}">
+            <button class="btn btn-primary btn-lg" type="submit">
+                <i class="bi bi-search"></i> Найти
+            </button>
+            {% if search_query %}
+            <a href="{{ url_for('forum_index') }}" class="btn btn-outline-secondary btn-lg" title="Сбросить поиск">
+                <i class="bi bi-x-lg"></i>
+            </a>
+            {% endif %}
+        </div>
+    </form>
+
+    {% if questions %}
+        <ul class="list-group">
+            {% for question in questions %}
+            <li class="list-group-item d-flex justify-content-between align-items-start mb-2 shadow-sm rounded p-3">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">
+                        <a href="{{ url_for('view_question', question_id=question.id) }}" class="text-decoration-none fs-5">{{ question.title }}</a>
+                    </div>
+                    <p class="mb-1 text-muted">
+                        {% if question.content %}
+                            {{ question.content[:150]|striptags }}{% if question.content|length > 150 %}...{% endif %}
+                        {% else %}
+                            {# <em>Нет дополнительного текста вопроса.</em> #}
+                        {% endif %}
+                    </p>
+                    <small class="text-muted">
+                        <i class="bi bi-person-circle"></i> {{ question.user.login if question.user else "Аноним" }}
+                        &bull; <i class="bi bi-calendar3"></i> {{ question.created_date.strftime('%d.%m.%Y %H:%M') }}
+                        &bull; <i class="bi bi-chat-left-text"></i> Ответов: {{ question.answers|length }}
+                    </small>
+                </div>
+                {% if question.image_filename %}
+                <div class="ms-3 text-center" style="max-width: 100px;">
+                     <img src="{{ url_for('static', filename='uploads/questions/' + question.image_filename) }}"
+                          alt="Изображение к вопросу" class="img-thumbnail"
+                          style="max-height: 70px; object-fit: cover;"
+                          onerror="this.style.display='none'; this.onerror=null;">
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info mt-3" role="alert">
+            {% if search_query %}
+                По вашему запросу "<strong>{{ search_query }}</strong>" ничего не найдено. Попробуйте изменить запрос или <a href="{{ url_for('forum_index') }}" class="alert-link">сбросить поиск</a>.
+            {% else %}
+                Пока нет ни одного вопроса. <a href="{{ url_for('create_question') if current_user.is_authenticated else url_for('login', next=url_for('create_question')) }}" class="alert-link">Будьте первым!</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

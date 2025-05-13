@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4" id="knowledge_base_page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">{{ section_title }}</h1>
+        {% if is_admin() %}
+        {# Убедитесь, что current_entry_type_slug передается в этот шаблон из main.py #}
+        {# и что VALID_ENTRY_TYPES также доступен в контексте шаблона #}
+        <a href="{{ url_for('add_knowledge_entry', entry_type_slug=current_entry_type_slug) }}" class="btn btn-success">
+            <i class="bi bi-plus-circle-fill me-2"></i>Добавить
+            {% set entry_type_display = VALID_ENTRY_TYPES.get(current_entry_type_slug, 'запись') %}
+            {% if entry_type_display.endswith('и') or entry_type_display.endswith('я') %}
+                {{ entry_type_display[:-1].lower() }}ю
+            {% elif entry_type_display.endswith('ы') %}
+                 {{ entry_type_display[:-1].lower() }}
+            {% else %}
+                {{ entry_type_display.lower() }}
+            {% endif %}
+        </a>
+        {% endif %}
+    </div>
+
+    {% if entries %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for entry in entries %}
+        <div class="col">
+            <div class="card h-100 shadow-sm entry-card">
+                {# Ссылка на просмотр отдельной записи #}
+                <a href="{{ url_for('view_knowledge_entry', entry_id=entry.id) }}" class="text-decoration-none">
+                    <img src="{{ url_for('static', filename='uploads/knowledge_entries/' + entry.main_image_filename) }}"
+                         class="card-img-top entry-card-img" alt="{{ entry.title }}"
+                         onerror="this.src='{{ url_for('static', filename='images/placeholder.png') }}'; this.alt='Изображение не найдено';">
+                </a>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        <a href="{{ url_for('view_knowledge_entry', entry_id=entry.id) }}" class="text-decoration-none stretched-link entry-title-link">{{ entry.title }}</a>
+                    </h5>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                     <small class="text-muted"><i class="bi bi-calendar3"></i> {{ entry.created_date.strftime('%d.%m.%Y') }}</small>
+                     {% if entry.user %}
+                     <small class="text-muted ms-2"><i class="bi bi-person"></i> {{ entry.user.login }}</small>
+                     {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        В разделе "{{ section_title }}" пока нет записей.
+        {% if is_admin() %}
+            Вы можете <a href="{{ url_for('add_knowledge_entry', entry_type_slug=current_entry_type_slug) }}" class="alert-link">добавить первую</a>.
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .entry-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .entry-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+    }
+    .entry-card-img {
+        height: 200px;
+        object-fit: cover;
+    }
+    .entry-title-link {
+        color: var(--color-primary-blue);
+    }
+    .entry-title-link:hover {
+        text-decoration: underline;
+        color: #004c75;
+    }
+    .card-footer {
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5" id="view_knowledge_entry_page">
+    {% if entry %}
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <article class="knowledge-entry-article bg-white p-4 p-md-5 rounded shadow-sm">
+                <header class="mb-4 border-bottom pb-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('knowledge_base_default') }}">База знаний</a></li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('view_knowledge_section', entry_type_slug=entry.entry_type) }}">
+                                    {{ VALID_ENTRY_TYPES.get(entry.entry_type, entry.entry_type|capitalize) }}
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ entry.title|truncate(50) }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="display-5 fw-bold entry-title">{{ entry.title }}</h1>
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-calendar3"></i> Опубликовано: {{ entry.created_date.strftime('%d %B %Y в %H:%M') }}
+                        {% if entry.user %}
+                        <span class="mx-2">&bull;</span>
+                        <i class="bi bi-person-fill"></i> Автор: {{ entry.user.login }}
+                        {% endif %}
+                    </p>
+                </header>
+
+                {% if entry.main_image_filename %}
+                <figure class="text-center mb-4 entry-main-image">
+                    <img src="{{ url_for('static', filename='uploads/knowledge_entries/' + entry.main_image_filename) }}"
+                         class="img-fluid rounded shadow-sm"
+                         alt="Основное изображение: {{ entry.title }}"
+                         style="max-height: 500px; object-fit: contain;">
+                </figure>
+                {% endif %}
+
+                <div class="entry-content">
+                    {# Отображаем HTML, сгенерированный из Markdown #}
+                    {{ html_content|safe }}
+                </div>
+
+                {% if is_admin() %}
+                <hr class="my-4">
+                <div class="admin-actions text-end">
+                    {# <a href="{{ url_for('edit_knowledge_entry', entry_id=entry.id) }}" class="btn btn-sm btn-outline-primary me-2">
+                        <i class="bi bi-pencil-square"></i> Редактировать
+                    </a>
+                    <a href="{{ url_for('delete_knowledge_entry', entry_id=entry.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Вы уверены, что хотите удалить эту запись?');">
+                        <i class="bi bi-trash3"></i> Удалить
+                    </a> #}
+                </div>
+                {% endif %}
+            </article>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        Запись не найдена.
+    </div>
+    <div class="text-center mt-3">
+        <a href="{{ url_for('knowledge_base_default') }}" class="btn btn-primary">Вернуться в Базу знаний</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .entry-title {
+        color: var(--color-primary-blue);
+    }
+    .entry-main-image img {
+        border: 1px solid var(--color-grey-medium);
+    }
+    .entry-content {
+        font-size: 1.1rem; /* Немного увеличим основной шрифт статьи */
+        line-height: 1.7;
+    }
+    /* Стили для элементов, генерируемых Markdown */
+    .entry-content h1, .entry-content h2, .entry-content h3, .entry-content h4, .entry-content h5, .entry-content h6 {
+        margin-top: 1.5em;
+        margin-bottom: 0.75em;
+        font-weight: 600;
+        color: var(--color-primary-blue);
+    }
+    .entry-content h1 { font-size: 2.2rem; }
+    .entry-content h2 { font-size: 1.8rem; }
+    .entry-content h3 { font-size: 1.5rem; }
+    .entry-content p {
+        margin-bottom: 1.25rem;
+    }
+    .entry-content ul, .entry-content ol {
+        margin-bottom: 1.25rem;
+        padding-left: 2rem;
+    }
+    .entry-content li {
+        margin-bottom: 0.5rem;
+    }
+    .entry-content blockquote {
+        border-left: 4px solid var(--color-grey-medium);
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-bottom: 1.25rem;
+        font-style: italic;
+        color: var(--color-grey-dark);
+    }
+    .entry-content pre {
+        background-color: var(--color-grey-light);
+        border: 1px solid var(--color-grey-medium);
+        padding: 1rem;
+        border-radius: 0.3rem;
+        overflow-x: auto; /* Для горизонтальной прокрутки длинных строк кода */
+        font-size: 0.9rem;
+    }
+    .entry-content code {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: var(--color-grey-light);
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+        font-size: 0.9em;
+    }
+    .entry-content pre code {
+        background-color: transparent;
+        padding: 0;
+        font-size: inherit;
+    }
+    .entry-content table {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        border-collapse: collapse;
+    }
+    .entry-content th, .entry-content td {
+        border: 1px solid var(--color-grey-medium);
+        padding: 0.75rem;
+        text-align: left;
+    }
+    .entry-content th {
+        background-color: var(--color-grey-light);
+        font-weight: 600;
+    }
+    .entry-content img { /* Стили для изображений внутри контента Markdown */
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.3rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        display: block; /* Чтобы margin auto работал для центрирования, если нужно */
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .breadcrumb-item a {
+        text-decoration: none;
+        color: var(--color-primary-blue);
+    }
+    .breadcrumb-item.active {
+        color: var(--color-grey-dark);
+    }
+</style>
+{% endblock %}

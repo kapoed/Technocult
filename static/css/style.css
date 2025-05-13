@@ -1,16 +1,24 @@
+/* Импорт переменных из base.html невозможен напрямую,
+   но мы можем использовать их здесь, если определим глобально или повторим.
+   Для простоты, предположим, что :root переменные из base.html доступны,
+   но лучше их также объявить здесь или в отдельном файле CSS переменных, если base.html не всегда загружается первым.
+   Поскольку :root в <style> теге base.html будет применен, эти переменные должны быть доступны.
+*/
+
+/* Общие стили форм аутентификации (оставляем как есть, если устраивают, или адаптируем) */
 .auth-form {
     max-width: 500px;
-    margin: 5rem auto;
+    margin: 3rem auto; /* Уменьшил отступ сверху */
     padding: 2.5rem;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    background: white;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    background: #ffffff; /* Белый фон для форм */
 }
 
 .auth-form h2 {
     text-align: center;
     margin-bottom: 2rem;
-    color: #2c3e50;
+    color: #2c3e50; /* Темно-серый для заголовков форм */
     font-weight: 600;
 }
 
@@ -19,66 +27,177 @@
 }
 
 .form-floating label {
-    color: #7f8c8d;
+    color: var(--color-grey-dark);
 }
 
 .form-control {
-    height: 50px;
+    height: 55px;
     border-radius: 8px;
-    border: 1px solid #dfe6e9;
+    border: 1px solid var(--color-grey-medium);
     transition: all 0.3s ease;
 }
 
 .form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.2);
-    border-color: #3498db;
+    border-color: var(--color-primary-blue); /* Синяя рамка при фокусе */
+    box-shadow: 0 0 0 0.25rem rgba(0, 96, 147, 0.2); /* Тень для синего цвета */
 }
 
-.btn-primary {
-    width: 100%;
-    padding: 12px;
+/* Кастомизация кнопок Bootstrap */
+.btn {
     border-radius: 8px;
-    background-color: #3498db;
-    border: none;
+    padding: 0.6rem 1.2rem;
     font-weight: 500;
     letter-spacing: 0.5px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent; /* Убираем стандартную рамку, если будем задавать свою */
 }
 
-.btn-primary:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
+.btn-lg {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
 }
 
-.form-check {
-    margin-bottom: 1.5rem;
+/* Основная кнопка - Синяя */
+.btn-primary {
+    background-color: var(--color-primary-blue);
+    border-color: var(--color-primary-blue);
+    color: var(--color-text-on-blue);
+}
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #004c75; /* Темнее синий */
+    border-color: #004c75;
+    color: var(--color-text-on-blue);
+    box-shadow: 0 2px 8px rgba(0, 96, 147, 0.3);
 }
 
-/* Адаптивность */
-@media (max-width: 576px) {
-    .auth-form {
-        margin: 2rem auto;
-        padding: 1.5rem;
-    }
+/* Кнопка "Успех" (Задать вопрос, Опубликовать) - Желтая */
+.btn-success {
+    background-color: var(--color-primary-yellow);
+    border-color: var(--color-primary-yellow);
+    color: var(--color-text-on-yellow);
+}
+.btn-success:hover, .btn-success:focus {
+    background-color: #e6a100; /* Темнее желтый */
+    border-color: #e6a100;
+    color: var(--color-text-on-yellow);
+    box-shadow: 0 2px 8px rgba(255, 178, 0, 0.3);
 }
 
-/* Сообщения */
-.alert {
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
+/* Кнопка "Предупреждение" (Регистрация в навбаре) - уже настроена в base.html */
+/* Если нужна отдельная .btn-warning для контента: */
+.btn-warning {
+    background-color: var(--color-primary-yellow);
+    border-color: var(--color-primary-yellow);
+    color: var(--color-text-on-yellow);
+}
+.btn-warning:hover, .btn-warning:focus {
+    background-color: #e6a100;
+    border-color: #e6a100;
+    color: var(--color-text-on-yellow);
 }
 
-/* Кастомные стили для ошибок */
+
+/* Вторичная контурная кнопка (Сбросить поиск) */
+.btn-outline-secondary {
+    border-color: var(--color-grey-dark);
+    color: var(--color-grey-dark);
+}
+.btn-outline-secondary:hover, .btn-outline-secondary:focus {
+    background-color: var(--color-grey-dark);
+    color: #fff;
+    border-color: var(--color-grey-dark);
+}
+
+/* Стили для ошибок валидации */
 .invalid-feedback {
-    color: #e74c3c;
+    color: var(--color-primary-red); /* Красный для ошибок */
     margin-top: 0.5rem;
     font-size: 0.85rem;
 }
 
 .is-invalid {
-    border-color: #e74c3c !important;
+    border-color: var(--color-primary-red) !important;
 }
 
 .is-invalid:focus {
-    box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.2) !important;
+    box-shadow: 0 0 0 0.25rem rgba(200, 24, 37, 0.2) !important; /* Тень для красного */
+}
+
+/* Стили для иконки пользователя в навбаре (если нужны доп. стили) */
+.nav-icon-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 1.8rem; /* Уже было, можно оставить */
+    color: white; /* Уже было */
+    text-decoration: none;
+    transition: filter 0.2s ease;
+}
+
+.nav-icon-button:hover,
+.nav-icon-button:focus {
+    color: white;
+    text-decoration: none;
+    filter: brightness(85%);
+}
+
+/* Стили для карточек (вопросы, ответы) */
+.card {
+    border: none; /* Убираем стандартную рамку Bootstrap */
+    border-radius: 10px; /* Более скругленные углы */
+}
+
+.card-header {
+    border-bottom: 1px solid var(--color-grey-medium); /* Тонкая линия-разделитель */
+    font-weight: 600;
+}
+
+/* Пример применения цветов к заголовкам карточек */
+/* На странице вопроса */
+#view_question_html .card-header.bg-light { /* Заголовок карточки вопроса */
+    background-color: var(--color-primary-blue) !important; /* Можно оставить белым или сделать светло-серым */
+    color: var(--color-text-on-blue) !important;
+}
+#view_question_html .card-header.bg-secondary { /* Заголовок карточки ответов */
+    background-color: var(--color-primary-blue) !important;
+    color: var(--color-text-on-blue) !important;
+}
+#view_question_html .card-header h1,
+#view_question_html .card-header h2,
+#view_question_html .card-header h3,
+#view_question_html .card-header h4,
+#view_question_html .card-header h5 {
+    color: inherit; /* Наследовать цвет от родительского .card-header */
+}
+
+
+/* На странице создания вопроса */
+#create_question_html .card-header.bg-primary {
+    background-color: var(--color-primary-blue) !important;
+    color: var(--color-text-on-blue) !important;
+}
+
+
+/* Стили для списка вопросов на главной */
+#forum_html_template_with_search .list-group-item {
+    border: 1px solid var(--color-grey-medium);
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+#forum_html_template_with_search .list-group-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+#forum_html_template_with_search .list-group-item a {
+    color: var(--color-primary-blue); /* Синий для заголовков вопросов */
+}
+#forum_html_template_with_search .list-group-item a:hover {
+    text-decoration: underline;
+}
+
+/* Адаптивность для форм (если нужно) */
+@media (max-width: 576px) {
+    .auth-form {
+        margin: 2rem auto;
+        padding: 1.5rem;
+    }
 }

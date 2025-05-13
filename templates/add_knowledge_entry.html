@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5" id="add_knowledge_entry_page">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    {# Заголовок будет динамическим в зависимости от типа записи #}
+                    <h2 class="mb-0">Добавить новую запись: {{ form.entry_type.choices | selectattr(0, 'equalto', current_entry_type_slug) | map(attribute=1) | first | default('Запись', True) }}</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('add_knowledge_entry', entry_type_slug=current_entry_type_slug) }}" novalidate enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label fw-bold") }}
+                            {{ form.title(class="form-control form-control-lg" + (" is-invalid" if form.title.errors else "")) }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.title.errors %}<span>{{ error }}</span><br>{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {# Скрываем поле entry_type, если оно определяется URL, или показываем SelectField #}
+                        {# В данном случае, т.к. entry_type_slug передается в URL, можно сделать его HiddenField #}
+                        {# Но для гибкости оставил SelectField, который можно предустановить #}
+                         <div class="mb-3">
+                            {{ form.entry_type.label(class="form-label fw-bold") }}
+                            {{ form.entry_type(class="form-select" + (" is-invalid" if form.entry_type.errors else "")) }}
+                            {% if form.entry_type.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.entry_type.errors %}<span>{{ error }}</span><br>{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.main_image.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-image"></i></span>
+                                {{ form.main_image(class="form-control" + (" is-invalid" if form.main_image.errors else "")) }}
+                            </div>
+                            {% if form.main_image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.main_image.errors %}<span>{{ error }}</span><br>{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.content.label(class="form-label fw-bold") }}
+                            {# Сюда позже будет интегрирован Markdown редактор #}
+                            {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else "")) }}
+                            <small class="form-text text-muted">Вы можете использовать <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">Markdown</a> для форматирования текста.</small>
+                            {% if form.content.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.content.errors %}<span>{{ error }}</span><br>{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {# Кнопки "Предпросмотр" и "Опубликовать" #}
+                        <div class="d-flex justify-content-end">
+                            {# <button type="button" class="btn btn-outline-secondary me-2" id="preview-button">Предпросмотр</button> #}
+                            {{ form.submit(class="btn btn-success btn-lg") }} {# Желтая кнопка #}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Модальное окно для предпросмотра (пока скрыто, добавим позже) #}
+{#
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Предпросмотр записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="preview-content-area">
+                Содержимое предпросмотра...
+            </div>
+        </div>
+    </div>
+</div>
+#}
+{% endblock %}

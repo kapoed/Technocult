@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4" id="view_question_html"> <div class="row justify-content-center">
+        <div class="col-md-10">
+            {% if question %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h1 class="h4 mb-0">{{ question.title }}</h1> <a href="{{ url_for('forum_index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад ко всем вопросам
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 pb-3 border-bottom">
+                        <p class="card-text" style="white-space: pre-wrap;">{{ question.content if question.content else "Нет дополнительного описания." }}</p>
+                        {% if question.image_filename %}
+                            <div class="mt-3 text-center">
+                                <img src="{{ url_for('static', filename='uploads/questions/' + question.image_filename) }}"
+                                     alt="Изображение к вопросу: {{ question.title }}"
+                                     class="img-fluid rounded"
+                                     style="max-height: 400px; object-fit: contain;"
+                                     onerror="this.style.display='none'; this.onerror=null;">
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center text-muted small">
+                        <div>
+                            <i class="bi bi-person-circle"></i> Автор: <strong>{{ question.user.login if question.user else "Аноним" }}</strong>
+                        </div>
+                        <div>
+                            <i class="bi bi-calendar3"></i> Опубликовано: {{ question.created_date.strftime('%d %B %Y в %H:%M') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white"> <h2 class="h5 mb-0">Ответы ({{ question.answers|length }})</h2>
+                </div>
+                <div class="card-body">
+                    {% if question.answers %}
+                        {% for answer in question.answers|sort(attribute='created_date') %}
+                        <div class="answer-item border-bottom pb-3 mb-3">
+                            <p style="white-space: pre-wrap;">{{ answer.content }}</p>
+                            {% if answer.image_filename %}
+                                <div class="mt-2 mb-2 text-center">
+                                    <img src="{{ url_for('static', filename='uploads/answers/' + answer.image_filename) }}"
+                                         alt="Изображение к ответу"
+                                         class="img-fluid rounded"
+                                         style="max-height: 300px; object-fit: contain;"
+                                         onerror="this.style.display='none'; this.onerror=null;">
+                                </div>
+                            {% endif %}
+                            <div class="d-flex justify-content-between align-items-center text-muted small mt-2">
+                                <div>
+                                    <i class="bi bi-person-circle"></i> {{ answer.user.login if answer.user else "Аноним" }}
+                                </div>
+                                <div>
+                                    <i class="bi bi-calendar3"></i> {{ answer.created_date.strftime('%d.%m.%Y %H:%M') }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">На этот вопрос пока нет ответов. Будьте первым!</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated %}
+            <div class="card shadow-sm mt-4">
+                <div class="card-header"> <h3 class="h5 mb-0">Ваш ответ</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('view_question', question_id=question.id) }}" novalidate enctype="multipart/form-data">
+                        {{ answer_form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ answer_form.content.label(class="form-label fw-bold") }}
+                            {{ answer_form.content(class="form-control" + (" is-invalid" if answer_form.content.errors else "")) }}
+                            {% if answer_form.content.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in answer_form.content.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ answer_form.image.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
+                                {{ answer_form.image(class="form-control" + (" is-invalid" if answer_form.image.errors else "")) }}
+                            </div>
+                             {% if answer_form.image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in answer_form.image.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {{ answer_form.submit(class="btn btn-primary") }}
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info mt-4" role="alert">
+                <a href="{{ url_for('login', next=request.url) }}" class="alert-link">Войдите</a> или <a href="{{ url_for('register') }}" class="alert-link">зарегистрируйтесь</a>, чтобы оставить ответ.
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-warning" role="alert">
+                Вопрос не найден. Возможно, он был удален или ссылка неверна.
+            </div>
+            <div class="text-center">
+                 <a href="{{ url_for('forum_index') }}" class="btn btn-primary">Вернуться на главную</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4" id="create_question_html"> <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white"> <h2 class="mb-0">Задать новый вопрос</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('create_question') }}" novalidate enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label fw-bold") }}
+                            {{ form.title(class="form-control form-control-lg" + (" is-invalid" if form.title.errors else "")) }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.title.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.content.label(class="form-label fw-bold") }}
+                            {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else "")) }}
+                            {% if form.content.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.content.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.image.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
+                                {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else "")) }}
+                            </div>
+                            {% if form.image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.image.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid">
+                             {{ form.submit(class="btn btn-success btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-muted text-center">
+                    <small>После публикации ваш вопрос появится на главной странице форума.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

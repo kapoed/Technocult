@@ -23,9 +23,6 @@
                             {% endif %}
                         </div>
 
-                        {# Скрываем поле entry_type, если оно определяется URL, или показываем SelectField #}
-                        {# В данном случае, т.к. entry_type_slug передается в URL, можно сделать его HiddenField #}
-                        {# Но для гибкости оставил SelectField, который можно предустановить #}
                          <div class="mb-3">
                             {{ form.entry_type.label(class="form-label fw-bold") }}
                             {{ form.entry_type(class="form-select" + (" is-invalid" if form.entry_type.errors else "")) }}
@@ -51,7 +48,6 @@
 
                         <div class="mb-4">
                             {{ form.content.label(class="form-label fw-bold") }}
-                            {# Сюда позже будет интегрирован Markdown редактор #}
                             {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else "")) }}
                             <small class="form-text text-muted">Вы можете использовать <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">Markdown</a> для форматирования текста.</small>
                             {% if form.content.errors %}
@@ -61,10 +57,8 @@
                             {% endif %}
                         </div>
 
-                        {# Кнопки "Предпросмотр" и "Опубликовать" #}
                         <div class="d-flex justify-content-end">
-                            {# <button type="button" class="btn btn-outline-secondary me-2" id="preview-button">Предпросмотр</button> #}
-                            {{ form.submit(class="btn btn-success btn-lg") }} {# Желтая кнопка #}
+                            {{ form.submit(class="btn btn-success btn-lg") }}
                         </div>
                     </form>
                 </div>

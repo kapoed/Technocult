@@ -35,10 +35,10 @@ class KnowledgeEntryForm(FlaskForm):
     )
 
     content = TextAreaField(
-        'Полное содержание записи (поддерживает Markdown)',
+        'Полное содержание записи',
         validators=[DataRequired(message="Пожалуйста, введите содержание записи.")],
         render_kw={"rows": 20,
-                   "placeholder": "Введите текст вашей записи здесь. Вы можете использовать Markdown для форматирования..."}
+                   "placeholder": "Введите текст вашей записи здесь."}
     )
 
     submit = SubmitField('Опубликовать запись')
